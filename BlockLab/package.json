@@ -1,0 +1,25 @@
+{
+  "name": "blocklab",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Interactive lessons on the cryptography behind Bitcoin for middle school students, in English, Thai and Burmese.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^5.0.0",
+    "vite": "^7.1.0",
+    "vitest": "^3.2.0"
+  },
+  "engines": {
+    "node": ">=20.19"
+  }
+}

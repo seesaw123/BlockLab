@@ -1,0 +1,31 @@
+.lab-page { padding: 36px 0 60px; display: grid; gap: 24px; }
+.lab-heading h1 { font-size: clamp(2rem, 5vw, 3.7rem); max-width: 900px; margin: 16px 0; }
+.lab-heading .lede { max-width: 780px; }
+.lab-warning { border: 2px solid #b57b18; background: #fff2cb; color: #3c2b0c; border-radius: 14px; padding: 16px 20px; }
+.lab-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; padding-left: 24px; font-weight: bold; }
+.lab-wallets, .lab-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.lab-panel { border: 1px solid #89909f; border-radius: 18px; padding: 24px; min-width: 0; }
+.lab-panel h2 { margin: 0 0 18px; }
+.lab-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+.lab-row h2 { margin: 0; }
+.lab-avatar { background: #f2b441; color: #1b2440; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font-weight: bold; }
+.lab-balance { margin-top: 20px; }
+.lab-balance strong { font-family: 'JetBrains Mono', monospace; font-size: clamp(1.3rem, 3vw, 1.9rem); }
+.lab-key { margin: 12px 0; display: grid; gap: 6px; }
+.lab-key span { font-size: .85rem; font-weight: bold; }
+.lab-key code { display: block; font-size: .8rem; overflow-wrap: anywhere; white-space: pre-wrap; background: rgba(128,128,128,.12); padding: 10px; border-radius: 8px; }
+.lab-help, .lab-footer { font-size: .9rem; }
+.lab-small { font-size: .85rem; margin: 8px 0; }
+.lab-notice { min-height: 28px; margin: 0; font-weight: bold; }
+.lab-page form { display: grid; gap: 10px; margin-top: 20px; }
+.lab-page input, .lab-page select { width: 100%; box-sizing: border-box; padding: 12px; font: inherit; border: 1px solid #89909f; border-radius: 8px; background: transparent; color: inherit; }
+.lab-page select option { color: #1b2440; background: #fffdf8; }
+.lab-page button:disabled { opacity: .45; cursor: not-allowed; }
+.lab-page summary { cursor: pointer; font-weight: bold; padding: 10px 0; }
+.lab-tx { padding: 18px 0; border-top: 1px solid #89909f; margin-top: 18px; }
+.lab-status { color: #207b48; font-weight: bold; }
+.lab-empty { padding: 20px 0; }
+.lab-block { border-top: 1px solid #89909f; padding: 10px 0; }
+.lab-page :focus-visible { outline: 3px solid #b57b18; outline-offset: 4px; }
+@media (max-width: 760px) { .lab-wallets, .lab-grid { grid-template-columns: 1fr; } .lab-steps { grid-template-columns: 1fr 1fr; } .lab-panel { padding: 18px; } }
+@media (prefers-color-scheme: dark) { .lab-status { color: #80dba4; } }

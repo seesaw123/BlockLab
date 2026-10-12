@@ -1,3 +1,4 @@
+import { labText } from '../i18n/lab.js';
 import { ChainScene } from '../components/ChainScene.jsx';
 import { ArrowIcon, ShieldIcon } from '../components/Icons.jsx';
 import { useLang } from '../context/LanguageContext.jsx';
@@ -26,7 +27,7 @@ function MissionCard({ mission }) {
 }
 
 export function HomePage() {
-  const { t, lt } = useLang();
+  const { lang, t, lt } = useLang();
   const { count, nextLesson } = useProgress();
   const ctaLabel = count === 0 ? t('start1') : nextLesson ? `${t('cont')}: ${nextLesson.num} ${lt(nextLesson, 'title')}` : t('replay');
 
@@ -40,6 +41,7 @@ export function HomePage() {
           <div className="cta">
             <a className="btn" href={`#l-${(nextLesson ?? LESSONS[0]).id}`}>{ctaLabel} <ArrowIcon /></a>
             <a className="btn ghost" href="#map">{t('seeMap')}</a>
+            <a className="btn ghost" href="#lab">{labText(lang).nav} <ArrowIcon /></a>
           </div>
         </div>
         <div className="chain">
@@ -73,3 +75,4 @@ export function HomePage() {
     </>
   );
 }
+

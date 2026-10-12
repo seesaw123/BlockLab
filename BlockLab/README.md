@@ -98,3 +98,34 @@ Code is released under the [MIT Licence](LICENSE). The licence for lesson conten
 ---
 
 Made by [Saw Nyan Lin Tun](https://github.com/SawNyanLinTun), Digital Innovation, Chiang Mai University.
+
+
+## Bitcoin practice lab
+
+Open `#lab` from the navigation or home page. Create Alice and Bob, give Alice
+1 fictional BTC, send 0.1 BTC, inspect the signature and mempool, and mine a
+simulated block. Bob can spend the received output after confirmation. Test an
+altered amount to see the original signature fail verification. English, Thai
+and Burmese interface text is included.
+
+This first version needs no Supabase, backend or Bitcoin Core.
+Keys and lab state exist only in tab memory; reload discards them. Lesson
+progress is unaffected by resetting the lab. Private keys are hidden until
+explicitly revealed, never uploaded, and must never be used with real funds.
+
+The lab performs secp256k1 key derivation and ECDSA signing/verification, using
+parameters from Standards for Efficient Cryptography 2 (SEC 2), section 2.4.1:
+https://www.secg.org/sec2-v2.pdf. Its educational BigInt implementation is not
+constant-time or suitable for production wallets. Vitest tests cross-check public keys
+and signatures against Node/OpenSSL.
+
+Transfers are teaching JSON, not Bitcoin wire transactions. Addresses start with
+`lab_` and are not Bitcoin addresses. A local UTXO ledger reserves pending inputs
+and credits outputs when a block is created. Amounts use integer satoshis. The
+fixed fee is 1,000 sats; fees leave student wallets, with miner rewards omitted.
+Faucet outputs are fictional and instantly spendable. Blocks have linked hashes
+but no proof-of-work or peers. Nothing is broadcast to any Bitcoin network.
+
+A later regtest integration requires a separately hosted Bitcoin Core node and
+a restricted backend API; GitHub Pages cannot run that backend. Supabase can
+optionally store student progress, but is not a Bitcoin node.

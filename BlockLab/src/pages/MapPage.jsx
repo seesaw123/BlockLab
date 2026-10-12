@@ -91,7 +91,6 @@ export function MapPage() {
               <path d="M3 10h26" />
             </svg>
             <span className="station-name">Station-1</span>
-            <span className="station-range">{t('stationUnits')}</span>
           </summary>
           <div className="station-units">
             {MISSIONS.map(m => <UnitRow key={m.n} mission={m} />)}

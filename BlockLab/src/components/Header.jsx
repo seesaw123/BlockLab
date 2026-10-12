@@ -1,3 +1,4 @@
+import { labText } from '../i18n/lab.js';
 import { useLang } from '../context/LanguageContext.jsx';
 import { useProgress } from '../context/ProgressContext.jsx';
 import { LANGS } from '../i18n/strings.js';
@@ -15,6 +16,7 @@ export function Header({ page }) {
         </a>
         <nav className="nav" aria-label="Main">
           <a href="#map" aria-current={page === 'map' ? 'page' : undefined}>{t('course')}</a>
+          <a href="#lab" aria-current={page === 'lab' ? 'page' : undefined}>{labText(lang).nav}</a>
           <a href="#about" aria-current={page === 'about' ? 'page' : undefined}>{t('about')}</a>
         </nav>
         <div className="meter">
@@ -30,3 +32,4 @@ export function Header({ page }) {
     </header>
   );
 }
+

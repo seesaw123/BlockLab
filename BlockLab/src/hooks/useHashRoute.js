@@ -7,7 +7,7 @@ export function parseRoute(hash) {
   const h = (hash || '').replace(/^#/, '');
   const lesson = h.match(/^l-(\d+-\d+)$/);
   if (lesson) return { page: 'lesson', id: lesson[1] };
-  if (h === 'map' || h === 'about') return { page: h };
+  if (h === 'map' || h === 'about' || h === 'lab') return { page: h };
   return { page: 'home' };
 }
 
@@ -23,3 +23,4 @@ export function useHashRoute() {
   }, []);
   return route;
 }
+

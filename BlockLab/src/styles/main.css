@@ -339,3 +339,17 @@ hr.dash { border: none; border-top: 1.5px dashed var(--line); margin: 0; }
   .link { width: 20px; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+
+/* Course stations: each folder contains its existing unit tracks. */
+.station-folder { border: 1.5px solid var(--line); border-radius: 24px; background: var(--card); overflow: hidden; }
+.station-summary { display: flex; align-items: center; gap: 14px; padding: 22px 24px; cursor: pointer; list-style: none; background: var(--paper); }
+.station-summary::-webkit-details-marker { display: none; }
+.station-summary::after { content: ''; width: 9px; height: 9px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(-45deg); margin-left: auto; flex: none; }
+.station-folder[open] > .station-summary::after { transform: rotate(45deg); }
+.station-summary:focus-visible { outline: 3px solid var(--amber); outline-offset: -5px; }
+.station-icon { color: var(--ink); fill: var(--amber); flex: none; }
+.station-name { font-family: 'Bricolage Grotesque', sans-serif; font-size: clamp(22px, 3vw, 28px); font-weight: 800; }
+.station-range { font-size: 14px; color: var(--ink); opacity: .7; }
+.station-units { display: grid; gap: 16px; padding: 12px 22px 24px; }
+@media (max-width: 600px) { .station-summary { padding: 18px 16px; gap: 10px; flex-wrap: wrap; } .station-range { font-size: 12px; } .station-units { padding: 8px 12px 18px; } .station-units .urow { padding: 18px 16px; } }

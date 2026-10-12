@@ -84,7 +84,19 @@ export function MapPage() {
     <div className="map">
       <div className="rows">
         <h1>{t('mapH')}</h1>
-        {MISSIONS.map(m => <UnitRow key={m.n} mission={m} />)}
+        <details className="station-folder" open>
+          <summary className="station-summary">
+            <svg className="station-icon" width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" aria-hidden="true">
+              <path d="M3 9V6a2 2 0 0 1 2-2h7l4 5h11a2 2 0 0 1 2 2v15a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9z" />
+              <path d="M3 10h26" />
+            </svg>
+            <span className="station-name">Station-1</span>
+            <span className="station-range">{t('stationUnits')}</span>
+          </summary>
+          <div className="station-units">
+            {MISSIONS.map(m => <UnitRow key={m.n} mission={m} />)}
+          </div>
+        </details>
       </div>
       <aside className="side">
         <div className="progress-card">
@@ -111,3 +123,4 @@ export function MapPage() {
     </div>
   );
 }
+

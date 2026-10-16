@@ -1,4 +1,4 @@
-import { labText } from '../i18n/lab.js';
+import { guidedLabText, labText } from '../i18n/lab.js';
 import { useLang } from '../context/LanguageContext.jsx';
 import { useProgress } from '../context/ProgressContext.jsx';
 import { LANGS } from '../i18n/strings.js';
@@ -7,6 +7,24 @@ import { LogoIcon } from './Icons.jsx';
 export function Header({ page }) {
   const { lang, setLang, t } = useLang();
   const { count, total } = useProgress();
+  if (page === 'lab') return (
+    <header className="topbar lab-topbar">
+      <div className="lab-topbar-in">
+        <a className="logo" href="#home" aria-label="BlockLab home">
+          <LogoIcon />
+          BlockLab <span className="pill">Pilot</span>
+        </a>
+        <div className="lab-header-right">
+          <span>{guidedLabText(lang).practiceNote}</span>
+          <div className="langs" role="group" aria-label="Language">
+            {LANGS.map(([code, label]) => (
+              <button key={code} type="button" lang={code} aria-pressed={lang === code} onClick={() => setLang(code)}>{label}</button>
+            ))}
+          </div>
+        </div>
+      </div>
+    </header>
+  );
   return (
     <header className="topbar">
       <div className="wrap topbar-in">

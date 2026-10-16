@@ -1,88 +1,132 @@
 import { useReducer, useState } from 'react';
 import { useLang } from '../context/LanguageContext.jsx';
-import { labText } from '../i18n/lab.js';
-import { verify } from '../lib/lab-keys.js';
+import { guidedLabText, labText } from '../i18n/lab.js';
+import { ArrowIcon } from '../components/Icons.jsx';
 import { FEE, formatBTC, transactionMessage } from '../state/bitcoin-lab.js';
 import '../styles/lab.css';
 
-function KeyValue({ label, value }) {
-  return <div className="lab-key"><span>{label}</span><code>{value}</code></div>;
+const STEP_LABELS = ['meet', 'fund', 'send', 'wait', 'confirm'];
+
+function ProgressStep({ index, current, label }) {
+  const state = index < current ? 'done' : index === current ? 'active' : 'upcoming';
+  return <li className={`guided-progress-step is-${state}`} aria-current={state === 'active' ? 'step' : undefined}>
+    <span className="guided-progress-dot" aria-hidden="true">{state === 'done' ? '✓' : index}</span>
+    <span>{label}</span>
+  </li>;
 }
-function Transfer({ tx, lab, c, confirmations, onTamper }) {
-  return <article className="lab-tx">
-    <div className="lab-row"><strong>{lab.wallets.find(w => w.address === tx.from)?.name} → {lab.wallets.find(w => w.address === tx.to)?.name}</strong><span>{formatBTC(tx.amount)} BTC</span></div>
-    <p className="lab-status">{c.signed}{confirmations ? ` · ${c.confirmations}: ${confirmations}` : ''}</p>
-    <details><summary>{c.details}</summary>
-      <KeyValue label="ID (simulation)" value={tx.id} />
-      <KeyValue label="ECDSA r || s" value={tx.signature} />
-      <KeyValue label={c.public} value={tx.publicKey} />
-      <KeyValue label="JSON" value={transactionMessage(tx)} />
-      <p>{c.inputCount}: {tx.inputs.length} · {c.change}: {formatBTC(tx.outputs.filter(o => o.address === tx.from).reduce((sum, o) => sum + o.sats, 0))} BTC</p>
-    </details>
-    <button type="button" className="btn ghost lab-small" onClick={() => onTamper(tx)}>{c.tamper}</button>
+
+function WalletCard({ name, role, balance, availableLabel }) {
+  return <article className="guided-wallet">
+    <div className="guided-wallet-head">
+      <div className="guided-person"><span className="guided-avatar" aria-hidden="true">{name[0]}</span><strong>{name}</strong></div>
+      <span>{role}</span>
+    </div>
+    <strong className="guided-balance">{balance} BTC</strong>
+    <span className="guided-wallet-help">{availableLabel}</span>
   </article>;
 }
-export function BitcoinLabPage({ lab, onReset }) {
-  const { lang } = useLang(), c = labText(lang);
-  const [, refresh] = useReducer(n => n + 1, 0);
-  const [notice, setNotice] = useState('');
-  const [revealed, setRevealed] = useState([]);
-  const [resetting, setResetting] = useState(false);
-  const [sender, setSender] = useState(0), [amount, setAmount] = useState('0.1');
-  function act(fn, success) {
-    try { fn(); setNotice(success); } catch (e) {
-      setNotice(({ amount: 'amountError', balance: 'balanceError', wallet: 'walletError' })[e.message] || (e.message.includes('randomness') ? 'unsupported' : 'error'));
-    }
-    refresh();
-  }
-  function tamper(tx) {
-    const altered = { ...tx, outputs: tx.outputs.map((o, i) => i === 0 ? { ...o, sats: o.sats + 1 } : o) };
-    setNotice(!verify(transactionMessage(altered), tx.signature, tx.publicKey) ? 'tampered' : 'error');
-  }
-  return <section className="lab-page">
-    <header className="lab-heading"><span className="tag">{c.badge}</span><h1>{c.title}</h1><p className="lede">{c.intro}</p></header>
-    <aside className="lab-warning">{c.warning}</aside>
-    <ol className="lab-steps">{c.steps.map(s => <li key={s}>{s}</li>)}</ol>
-    <p className="lab-notice" role="status" aria-live="polite">{c[notice] || ''}</p>
-    <div className="lab-wallets">{['Alice', 'Bob'].map((name, i) => {
-      const w = lab.wallets[i];
-      return <article className="lab-panel" key={name}>
-        <div className="lab-row"><h2>{name}</h2><span className="lab-avatar" aria-hidden="true">{name[0]}</span></div>
-        {w ? <>
-          <div className="lab-balance"><strong>{formatBTC(lab.balance(w.address))}</strong><span> BTC · {c.available}</span></div>
-          <p>{c.pending}: {formatBTC(lab.pending(w.address))} BTC</p>
-          <KeyValue label={c.address} value={w.address} /><KeyValue label={c.public} value={w.publicKey} />
-          <button type="button" className="btn ghost lab-small" aria-expanded={revealed.includes(i)} onClick={() => setRevealed(prev => prev.includes(i) ? prev.filter(v => v !== i) : [...prev, i])}>{revealed.includes(i) ? c.hide : c.reveal}</button>
-          {revealed.includes(i) && <KeyValue label={c.private} value={w.privateKey} />}
-          <p className="lab-help">{c.keyHelp}</p>
-          <button type="button" className="btn" disabled={w.funded} onClick={() => act(() => lab.fund(w.address), 'successFund')}>{c.fund}</button>
-          <details><summary>{c.utxos}</summary>{lab.utxos.filter(u => u.address === w.address && !u.locked).map(u => <KeyValue key={u.id} label={`${formatBTC(u.sats)} BTC`} value={u.id} />)}</details>
-        </> : <><p>{c.emptyWallet}</p><button type="button" className="btn" disabled={i !== lab.wallets.length} onClick={() => act(() => lab.createWallet(), 'successWallet')}>{c.create}</button></>}
-      </article>;
-    })}</div>
-    <div className="lab-grid">
-      <section className="lab-panel"><h2>{c.send}</h2>
-        <form onSubmit={e => { e.preventDefault(); act(() => lab.send(lab.wallets[sender]?.address, lab.wallets[1 - sender]?.address, amount), 'successSend'); }}>
-          <label htmlFor="lab-from">{c.sender}</label><select id="lab-from" value={sender} disabled={lab.wallets.length < 2} onChange={e => setSender(Number(e.target.value))}><option value={0}>Alice</option><option value={1}>Bob</option></select>
-          <label htmlFor="lab-to">{c.receiver}</label><input id="lab-to" value={sender ? 'Alice' : 'Bob'} readOnly />
-          <label htmlFor="lab-amount">{c.amount}</label><input id="lab-amount" inputMode="decimal" value={amount} onChange={e => setAmount(e.target.value)} required autoComplete="off" />
-          <p className="lab-help">{c.fee}</p><button className="btn" type="submit" disabled={lab.wallets.length < 2}>{c.send}</button>
-        </form>
-      </section>
-      <section className="lab-panel"><div className="lab-row"><h2>{c.pool} <span className="pill">{lab.mempool.length}</span></h2><button type="button" className="btn" onClick={() => act(() => lab.mine(), 'successMine')}>{c.mine}</button></div>
-        {lab.mempool.length ? lab.mempool.map(tx => <Transfer key={tx.id} tx={tx} lab={lab} c={c} onTamper={tamper} />) : <p className="lab-empty">{c.empty}</p>}
-      </section>
+
+function TechnicalDetails({ lab, copy, onReset }) {
+  const alice = lab.wallets[0];
+  const bob = lab.wallets[1];
+  const tx = lab.mempool[0] || lab.blocks.at(-1)?.transactions[0];
+  return <details className="guided-details">
+    <summary>{copy.details}</summary>
+    <div className="guided-detail-grid">
+      <div><strong>{copy.feeLabel}</strong><code>{formatBTC(FEE)} BTC</code></div>
+      <div><strong>{copy.networkLabel}</strong><span>{lab.blocks.length ? copy.confirmed : tx ? copy.pending : copy.notSent}</span></div>
+      {alice && <div><strong>Alice · {copy.address}</strong><code>{alice.address}</code></div>}
+      {bob && <div><strong>Bob · {copy.address}</strong><code>{bob.address}</code></div>}
+      {alice && <div><strong>Alice · Public key</strong><code>{alice.publicKey}</code></div>}
+      {bob && <div><strong>Bob · Public key</strong><code>{bob.publicKey}</code></div>}
+      {tx && <><div><strong>{copy.transactionId}</strong><code>{tx.id}</code></div><div><strong>{copy.signature}</strong><code>{tx.signature}</code></div><div><strong>JSON</strong><code>{transactionMessage(tx)}</code></div></>}
+      {lab.blocks.at(-1) && <div><strong>Block hash</strong><code>{lab.blocks.at(-1).hash}</code></div>}
     </div>
-    <section className="lab-panel"><h2>{c.blocks}</h2>
-      {lab.blocks.length ? [...lab.blocks].reverse().map(b => <details className="lab-block" key={b.height} open>
-        <summary>{c.block} #{b.height} · {b.transactions.length} {c.transfers}</summary>
-        <KeyValue label="Hash (simulation)" value={b.hash} /><KeyValue label="Previous hash" value={b.previous} />
-        {b.transactions.map(tx => <Transfer key={tx.id} tx={tx} lab={lab} c={c} confirmations={lab.blocks.length - b.height + 1} onTamper={tamper} />)}
-      </details>) : <p>{c.noBlocks}</p>}
+    <p>{copy.technicalNote}</p>
+    <button type="button" className="guided-btn guided-btn-secondary" onClick={onReset}>{copy.reset}</button>
+  </details>;
+}
+
+export function BitcoinLabPage({ lab, onReset }) {
+  const { lang } = useLang();
+  const copy = guidedLabText(lang);
+  const legacyCopy = labText(lang);
+  const [, refresh] = useReducer(n => n + 1, 0);
+  const [step, setStep] = useState(1);
+  const [notice, setNotice] = useState('');
+
+  const stepCopy = copy.steps[step - 1];
+  const tx = lab.mempool[0] || lab.blocks.at(-1)?.transactions[0];
+  const expectedChange = tx?.outputs.find(output => output.address === lab.wallets[0]?.address)?.sats;
+  const balances = step === 4
+    ? [expectedChange ? (expectedChange / 100000000).toFixed(3) : '0.900', '0.000']
+    : [0, 1].map(index => {
+      const wallet = lab.wallets[index];
+      return wallet ? (lab.balance(wallet.address) / 100000000).toFixed(3) : '0.000';
+    });
+
+  function runAction() {
+    try {
+      if (step === 1) {
+        while (lab.wallets.length < 2) lab.createWallet();
+      } else if (step === 2) {
+        if (!lab.wallets[0]) while (lab.wallets.length < 2) lab.createWallet();
+        if (!lab.wallets[0].funded) lab.fund(lab.wallets[0].address);
+      } else if (step === 3) {
+        if (!lab.mempool.length && !lab.blocks.length) lab.send(lab.wallets[0]?.address, lab.wallets[1]?.address, '0.1');
+      } else if (step === 4) {
+        if (lab.mempool.length) lab.mine();
+      } else {
+        setNotice(copy.finished);
+        return;
+      }
+      refresh();
+      setNotice(stepCopy.success);
+      setStep(current => Math.min(5, current + 1));
+    } catch (error) {
+      const key = ({ amount: 'amountError', balance: 'balanceError', wallet: 'walletError' })[error.message] || 'error';
+      setNotice(legacyCopy[key]);
+    }
+  }
+
+  function goBack() {
+    setNotice('');
+    setStep(current => Math.max(1, current - 1));
+  }
+
+  return <section className="guided-lab-page">
+    <header className="guided-story-intro">
+      <span className="guided-eyebrow">{copy.eyebrow}</span>
+      <h1>{copy.title}</h1>
+      <p>{copy.intro}</p>
+    </header>
+
+    <ol className="guided-progress" aria-label={copy.progressLabel}>
+      {STEP_LABELS.map((key, index) => <ProgressStep key={key} index={index + 1} current={step} label={copy.progress[key]} />)}
+    </ol>
+
+    <section className="guided-step-card">
+      <header className="guided-step-head">
+        <span className="guided-action-icon" aria-hidden="true"><ArrowIcon /></span>
+        <div><h2>{stepCopy.title}</h2><p>{stepCopy.description}</p></div>
+      </header>
+
+      <div className="guided-wallet-transfer">
+        <WalletCard name="Alice" role={stepCopy.aliceRole} balance={balances[0]} availableLabel={copy.available} />
+        <span className="guided-transfer-arrow" aria-hidden="true"><ArrowIcon /></span>
+        <WalletCard name="Bob" role={stepCopy.bobRole} balance={balances[1]} availableLabel={copy.available} />
+      </div>
+
+      <div className="guided-status-row"><strong>{stepCopy.statusLabel}</strong><span>{stepCopy.statusValue}</span></div>
+      <div className="guided-tip"><strong>{stepCopy.tipLabel}</strong><p>{stepCopy.tip}</p></div>
+      <p className="guided-notice" role="status" aria-live="polite">{notice}</p>
+
+      <div className="guided-actions">
+        <button type="button" className="guided-btn guided-btn-secondary" onClick={goBack} disabled={step === 1}>{stepCopy.back}</button>
+        <button type="button" className="guided-btn guided-btn-primary" onClick={runAction}>{stepCopy.primary}</button>
+      </div>
+
+      <TechnicalDetails lab={lab} copy={copy} onReset={onReset} />
     </section>
-    <details className="lab-panel"><summary>{c.limitsTitle}</summary><p>{c.limits}</p></details>
-    <footer className="lab-footer"><p>{c.resetNote}</p>
-      {resetting ? <div role="group" aria-label={c.resetQuestion}><p>{c.resetQuestion}</p><button type="button" className="btn" onClick={onReset}>{c.confirmReset}</button>{' '}<button type="button" className="btn ghost" onClick={() => setResetting(false)}>{c.cancel}</button></div> : <button type="button" className="btn ghost" onClick={() => setResetting(true)}>{c.reset}</button>}
-    </footer>
   </section>;
 }

@@ -19,7 +19,7 @@ export function App() {
   return (
     <>
       <Header page={page} />
-      <main className="wrap" id="app">
+      <main className={page === 'lab' ? 'lab-app' : 'wrap'} id="app">
         {page === 'home' && <HomePage />}
         {page === 'map' && <MapPage />}
         {page === 'about' && <AboutPage />}

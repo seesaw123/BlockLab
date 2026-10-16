@@ -53,7 +53,7 @@ export function BitcoinLabPage({ lab, onReset }) {
   const legacyCopy = labText(lang);
   const [, refresh] = useReducer(n => n + 1, 0);
   const [step, setStep] = useState(1);
-  const [notice, setNotice] = useState('');
+  const [notice, setNotice] = useState(null);
 
   const stepCopy = copy.steps[step - 1];
   const tx = lab.mempool[0] || lab.blocks.at(-1)?.transactions[0];
@@ -77,22 +77,26 @@ export function BitcoinLabPage({ lab, onReset }) {
       } else if (step === 4) {
         if (lab.mempool.length) lab.mine();
       } else {
-        setNotice(copy.finished);
+        setNotice({ kind: 'finished' });
         return;
       }
       refresh();
-      setNotice(stepCopy.success);
+      setNotice({ kind: 'success', step });
       setStep(current => Math.min(5, current + 1));
     } catch (error) {
       const key = ({ amount: 'amountError', balance: 'balanceError', wallet: 'walletError' })[error.message] || 'error';
-      setNotice(legacyCopy[key]);
+      setNotice({ kind: 'error', key });
     }
   }
 
   function goBack() {
-    setNotice('');
+    setNotice(null);
     setStep(current => Math.max(1, current - 1));
   }
+
+  const noticeText = notice?.kind === 'success' ? copy.steps[notice.step - 1].success
+    : notice?.kind === 'error' ? legacyCopy[notice.key]
+      : notice?.kind === 'finished' ? copy.finished : '';
 
   return <section className="guided-lab-page">
     <header className="guided-story-intro">
@@ -119,7 +123,7 @@ export function BitcoinLabPage({ lab, onReset }) {
 
       <div className="guided-status-row"><strong>{stepCopy.statusLabel}</strong><span>{stepCopy.statusValue}</span></div>
       <div className="guided-tip"><strong>{stepCopy.tipLabel}</strong><p>{stepCopy.tip}</p></div>
-      <p className="guided-notice" role="status" aria-live="polite">{notice}</p>
+      <p className="guided-notice" role="status" aria-live="polite">{noticeText}</p>
 
       <div className="guided-actions">
         <button type="button" className="guided-btn guided-btn-secondary" onClick={goBack} disabled={step === 1}>{stepCopy.back}</button>

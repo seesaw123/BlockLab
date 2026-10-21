@@ -5,6 +5,7 @@ import { AboutPage } from './pages/AboutPage.jsx';
 import { HomePage } from './pages/HomePage.jsx';
 import { LessonPage } from './pages/LessonPage.jsx';
 import { MapPage } from './pages/MapPage.jsx';
+import { PracticeLabPage } from './pages/PracticeLabPage.jsx';
 import { BitcoinSecurityPage } from './pages/BitcoinSecurityPage.jsx';
 
 export function App() {
@@ -18,6 +19,7 @@ export function App() {
       <main className={'wrap'} id="app">
         {page === 'home' && <HomePage />}
         {page === 'map' && <MapPage />}
+        {page === 'practice' && <PracticeLabPage />}
         {page === 'security' && <BitcoinSecurityPage />}
         {page === 'about' && <AboutPage />}
         {/* key: a fresh lesson page (and fresh toys) for every lesson */}

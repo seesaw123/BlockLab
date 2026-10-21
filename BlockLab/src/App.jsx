@@ -8,6 +8,7 @@ import { AboutPage } from './pages/AboutPage.jsx';
 import { HomePage } from './pages/HomePage.jsx';
 import { LessonPage } from './pages/LessonPage.jsx';
 import { MapPage } from './pages/MapPage.jsx';
+import { BitcoinSecurityPage } from './pages/BitcoinSecurityPage.jsx';
 
 export function App() {
   const route = useHashRoute();
@@ -22,6 +23,7 @@ export function App() {
       <main className={page === 'lab' ? 'lab-app' : 'wrap'} id="app">
         {page === 'home' && <HomePage />}
         {page === 'map' && <MapPage />}
+        {page === 'security' && <BitcoinSecurityPage />}
         {page === 'about' && <AboutPage />}
         {page === 'lab' && <BitcoinLabPage key={labVersion} lab={lab} onReset={() => { setLab(new BitcoinLab()); setLabVersion(v => v + 1); }} />}
         {/* key: a fresh lesson page (and fresh toys) for every lesson */}

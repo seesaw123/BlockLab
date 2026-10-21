@@ -18,8 +18,8 @@ for (const lang of ['en', 'th', 'my']) {
     lab.mine(); expect(render(lab, lang)).toContain(lab.blocks[0].hash);
   });
 }
-test('the lab hash route is recognized without changing existing routes', () => {
-  expect(parseRoute('#lab')).toEqual({ page: 'lab' });
+test('the retired lab route returns home without changing existing routes', () => {
+  expect(parseRoute('#lab')).toEqual({ page: 'home' });
   expect(parseRoute('#l-1-2')).toEqual({ page: 'lesson', id: '1-2' });
   expect(parseRoute('#about')).toEqual({ page: 'about' });
 });

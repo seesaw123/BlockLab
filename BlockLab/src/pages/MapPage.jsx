@@ -96,6 +96,10 @@ export function MapPage() {
             {MISSIONS.map(m => <UnitRow key={m.n} mission={m} />)}
           </div>
         </details>
+        <details className="station-folder" open>
+          <summary className="station-summary"><svg className="station-icon" width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><rect x="6" y="10" width="20" height="17" rx="3"/><path d="M10 10V7a6 6 0 0112 0v3"/></svg><span className="station-name">Station-2</span></summary>
+          <div className="station-units"><div className="urow current"><div className="uname"><span className="eyebrow">INTERACTIVE LESSON · OPEN</span><h2>How is Bitcoin secured?</h2><p>UTXOs, digital locks, unlocking proof and a script machine.</p></div><div className="track"><a className="node next" href="#security">Start Station-2 →</a></div><span className="count">5 steps</span></div></div>
+        </details>
       </div>
       <aside className="side">
         <div className="progress-card">

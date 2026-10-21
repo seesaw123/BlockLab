@@ -15,6 +15,7 @@ export function Header({ page }) {
         </a>
         <nav className="nav" aria-label="Main">
           <a href="#map" aria-current={page === 'map' ? 'page' : undefined}>{t('course')}</a>
+          <a href="#practice" aria-current={page === 'practice' ? 'page' : undefined}>Lab</a>
           <a href="#about" aria-current={page === 'about' ? 'page' : undefined}>{t('about')}</a>
         </nav>
         <div className="meter">

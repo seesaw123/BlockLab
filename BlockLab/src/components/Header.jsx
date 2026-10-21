@@ -1,4 +1,3 @@
-import { guidedLabText, labText } from '../i18n/lab.js';
 import { useLang } from '../context/LanguageContext.jsx';
 import { useProgress } from '../context/ProgressContext.jsx';
 import { LANGS } from '../i18n/strings.js';
@@ -7,24 +6,6 @@ import { LogoIcon } from './Icons.jsx';
 export function Header({ page }) {
   const { lang, setLang, t } = useLang();
   const { count, total } = useProgress();
-  if (page === 'lab') return (
-    <header className="topbar lab-topbar">
-      <div className="lab-topbar-in">
-        <a className="logo" href="#home" aria-label="BlockLab home">
-          <LogoIcon />
-          BlockLab <span className="pill">Pilot</span>
-        </a>
-        <div className="lab-header-right">
-          <span>{guidedLabText(lang).practiceNote}</span>
-          <div className="langs" role="group" aria-label="Language">
-            {LANGS.map(([code, label]) => (
-              <button key={code} type="button" lang={code} aria-pressed={lang === code} onClick={() => setLang(code)}>{label}</button>
-            ))}
-          </div>
-        </div>
-      </div>
-    </header>
-  );
   return (
     <header className="topbar">
       <div className="wrap topbar-in">
@@ -34,7 +15,6 @@ export function Header({ page }) {
         </a>
         <nav className="nav" aria-label="Main">
           <a href="#map" aria-current={page === 'map' ? 'page' : undefined}>{t('course')}</a>
-          <a href="#lab" aria-current={page === 'lab' ? 'page' : undefined}>{labText(lang).nav}</a>
           <a href="#about" aria-current={page === 'about' ? 'page' : undefined}>{t('about')}</a>
         </nav>
         <div className="meter">
